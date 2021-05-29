@@ -19,11 +19,7 @@ class FirstFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnFirstFragmentListener) {
-            listener = context
-        } else {
-            throw RuntimeException("$context must implement OnFirstFragmentListener")
-        }
+        listener = context as OnFirstFragmentListener
     }
 
     override fun onCreateView(
@@ -47,17 +43,13 @@ class FirstFragment : Fragment() {
         generateButton?.setOnClickListener {
             val min = minValue.text.toInt()
             val max = maxValue.text.toInt()
-            listener?.fromFirstToSecondPage(min, max)
+            listener?.toSecondPage(min, max)
         }
     }
 
     override fun onDetach() {
         listener = null
         super.onDetach()
-    }
-
-    interface OnFirstFragmentListener {
-        fun fromFirstToSecondPage(min: Int, max: Int)
     }
 
     companion object {
@@ -73,4 +65,8 @@ class FirstFragment : Fragment() {
 
         private const val PREVIOUS_RESULT_KEY = "PREVIOUS_RESULT"
     }
+}
+
+interface OnFirstFragmentListener {
+    fun toSecondPage(min: Int, max: Int)
 }

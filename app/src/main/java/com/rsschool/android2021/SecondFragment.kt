@@ -10,19 +10,16 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import kotlin.random.Random
 
-class SecondFragment : Fragment() {
+class SecondFragment : Fragment(), MainActivity.OnBackPressedListener {
 
     private var backButton: Button? = null
     private var result: TextView? = null
     private var listener: OnSecondFragmentListener? = null
+    private var generateNumber: Int = 0
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnSecondFragmentListener) {
-            listener = context
-        } else {
-            throw RuntimeException("$context must implement OnSecondFragmentListener")
-        }
+        listener = context as OnSecondFragmentListener
     }
 
     override fun onCreateView(
@@ -35,17 +32,25 @@ class SecondFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as MainActivity?)?.setOnBackPressedListener(this)
+
         result = view.findViewById(R.id.result)
         backButton = view.findViewById(R.id.back)
 
         val min = arguments?.getInt(MIN_VALUE_KEY) ?: 0
         val max = arguments?.getInt(MAX_VALUE_KEY) ?: 0
 
-        val generateNumber = generate(min, max).toString()
-        result?.text = generateNumber
+        generateNumber = generate(min, max)
+        result?.text = generateNumber.toString()
 
         backButton?.setOnClickListener {
-            listener?.fromSecondToFirstPage(generateNumber.toInt())
+            listener?.toFirstPage(generateNumber)
+        }
+    }
+
+    override fun doBack() {
+        if (requireActivity().supportFragmentManager.backStackEntryCount > 0) {
+            listener?.toFirstPage(generateNumber)
         }
     }
 
@@ -56,10 +61,6 @@ class SecondFragment : Fragment() {
 
     private fun generate(min: Int, max: Int): Int =
         Random.nextInt(min, max)
-
-    interface OnSecondFragmentListener {
-        fun fromSecondToFirstPage(prev: Int)
-    }
 
     companion object {
 
@@ -76,4 +77,8 @@ class SecondFragment : Fragment() {
         private const val MIN_VALUE_KEY = "MIN_VALUE"
         private const val MAX_VALUE_KEY = "MAX_VALUE"
     }
+}
+
+interface OnSecondFragmentListener {
+    fun toFirstPage(prev: Int)
 }

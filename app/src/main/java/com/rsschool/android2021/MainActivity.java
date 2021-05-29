@@ -5,39 +5,68 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends AppCompatActivity
-        implements FirstFragment.OnFirstFragmentListener, SecondFragment.OnSecondFragmentListener {
+        implements OnFirstFragmentListener, OnSecondFragmentListener {
+
+    private Fragment fragment;
+    private OnBackPressedListener onBackPressedListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        openFirstFragment(0);
-    }
 
-    private void openFirstFragment(int previousNumber) {
-        final Fragment firstFragment = FirstFragment.newInstance(previousNumber);
-        final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container, firstFragment);
-        transaction.commit();
-    }
-
-    private void openSecondFragment(int min, int max) {
-        final Fragment secondFragment = SecondFragment.newInstance(min, max);
-        final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container, secondFragment);
-        transaction.commit();
+        if (savedInstanceState == null) {
+            openFirstFragment(0);
+        }
     }
 
     @Override
-    public void fromFirstToSecondPage(int min, int max) {
+    protected void onDestroy() {
+        onBackPressedListener = null;
+        super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (onBackPressedListener != null)
+            onBackPressedListener.doBack();
+        else
+            super.onBackPressed();
+    }
+
+    public void setOnBackPressedListener(OnBackPressedListener onBackPressedListener) {
+        this.onBackPressedListener = onBackPressedListener;
+    }
+
+    private void openFirstFragment(int previousNumber) {
+        fragment = FirstFragment.newInstance(previousNumber);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit();
+    }
+
+    private void openSecondFragment(int min, int max) {
+        fragment = SecondFragment.newInstance(min, max);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void toSecondPage(int min, int max) {
         openSecondFragment(min, max);
     }
 
     @Override
-    public void fromSecondToFirstPage(int prev) {
+    public void toFirstPage(int prev) {
+        getSupportFragmentManager().popBackStack();
         openFirstFragment(prev);
+    }
+
+    interface OnBackPressedListener {
+        void doBack();
     }
 }
