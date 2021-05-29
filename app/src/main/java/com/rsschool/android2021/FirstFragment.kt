@@ -66,7 +66,3 @@ class FirstFragment : Fragment() {
         private const val PREVIOUS_RESULT_KEY = "PREVIOUS_RESULT"
     }
 }
-
-interface OnFirstFragmentListener {
-    fun toSecondPage(min: Int, max: Int)
-}

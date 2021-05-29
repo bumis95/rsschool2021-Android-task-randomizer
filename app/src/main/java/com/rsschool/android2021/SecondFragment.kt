@@ -78,7 +78,3 @@ class SecondFragment : Fragment(), MainActivity.OnBackPressedListener {
         private const val MAX_VALUE_KEY = "MAX_VALUE"
     }
 }
-
-interface OnSecondFragmentListener {
-    fun toFirstPage(prev: Int)
-}
