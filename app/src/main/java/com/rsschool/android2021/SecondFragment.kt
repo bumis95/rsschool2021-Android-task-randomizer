@@ -60,7 +60,7 @@ class SecondFragment : Fragment(), MainActivity.OnBackPressedListener {
     }
 
     private fun generate(min: Int, max: Int): Int =
-        Random.nextInt(min, max)
+        Random.nextInt(min, max + INCLUSIVE_RIGHT_BOUND)
 
     companion object {
 
