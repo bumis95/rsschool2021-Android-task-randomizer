@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 
 class FirstFragment : Fragment() {
@@ -41,10 +42,28 @@ class FirstFragment : Fragment() {
         previousResult?.text = "Previous result: ${result.toString()}"
 
         generateButton?.setOnClickListener {
-            val min = minValue.text.toInt()
-            val max = maxValue.text.toInt()
-            listener?.toSecondPage(min, max)
+            val min = minValue.text
+            val max = maxValue.text
+            if (min.isNotEmpty() && max.isNotEmpty()) {
+                if (checking(min.toInt(), max.toInt()))
+                    listener?.toSecondPage(min.toInt(), max.toInt())
+            } else {
+                Toast.makeText(context, "Empty field", Toast.LENGTH_SHORT).show()
+            }
         }
+    }
+
+    private fun checking(min: Int, max: Int): Boolean {
+        return if (min < 0 || max < 0) {
+            Toast.makeText(context, "min or max less than 0", Toast.LENGTH_SHORT).show()
+            false
+        } else if (min > max) {
+            Toast.makeText(context, "min > max", Toast.LENGTH_SHORT).show()
+            false
+        } else if (min > Int.MAX_VALUE || max > Int.MAX_VALUE) {
+            Toast.makeText(context, "min or max more than Int.max", Toast.LENGTH_SHORT).show()
+            false
+        } else true
     }
 
     override fun onDetach() {
