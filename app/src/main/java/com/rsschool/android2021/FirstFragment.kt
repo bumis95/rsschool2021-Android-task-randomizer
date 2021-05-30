@@ -42,33 +42,39 @@ class FirstFragment : Fragment() {
         previousResult?.text = "Previous result: ${result.toString()}"
 
         generateButton?.setOnClickListener {
-            val min = minValue.text
-            val max = maxValue.text
+            val min = minValue.text.toString()
+            val max = maxValue.text.toString()
             if (min.isNotEmpty() && max.isNotEmpty()) {
-                if (checking(min.toInt(), max.toInt()))
+                if (checking(min, max))
                     listener?.toSecondPage(min.toInt(), max.toInt())
             } else {
-                Toast.makeText(context, "Empty field", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Empty field(s)", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    private fun checking(min: Int, max: Int): Boolean {
-        return if (min < 0 || max < 0) {
-            Toast.makeText(context, "min or max less than 0", Toast.LENGTH_SHORT).show()
-            false
-        } else if (min > max) {
-            Toast.makeText(context, "min > max", Toast.LENGTH_SHORT).show()
-            false
-        } else if (min > Int.MAX_VALUE || max > Int.MAX_VALUE) {
-            Toast.makeText(context, "min or max more than Int.max", Toast.LENGTH_SHORT).show()
-            false
-        } else true
     }
 
     override fun onDetach() {
         listener = null
         super.onDetach()
+    }
+
+    private fun checking(minValue: String, maxValue: String): Boolean {
+        return try {
+            val min = minValue.toInt()
+            val max = maxValue.toInt()
+            if (min < 0 || max < 0) {
+                Toast.makeText(context, "Wrong input: min or max less than 0", Toast.LENGTH_SHORT)
+                    .show()
+                false
+            } else if (min > max) {
+                Toast.makeText(context, "Wrong input: min > max", Toast.LENGTH_SHORT).show()
+                false
+            } else true
+        } catch (e: Exception) {
+            Toast.makeText(context, "Wrong input: min or max more than Int.max", Toast.LENGTH_SHORT)
+                .show()
+            false
+        }
     }
 
     companion object {
